@@ -20,12 +20,15 @@ public class PlayerController : MonoBehaviour
     private float currentHorizontalSpeed, currentVerticalSpeed;
 
     [Header("Jump Input")]
-    private bool jumpPressed, endJumpEarly;
+    private float baseGravityScale;
+    private bool jumpPressed, endJumpEarly, isJumping;
 
     void Awake() {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<PlayerAnimations>();
         inputControls = new PlayerInputControls();
+
+        baseGravityScale = rb.gravityScale;
     }
 
     #region Events
@@ -51,10 +54,15 @@ public class PlayerController : MonoBehaviour
 
     #endregion
 
-    void FixedUpdate() {
+    void Update() {
         GetInput();
         CalculateMovement();
-        Movement();
+        CheckGrounded();
+        EndJumpEarly();
+    }
+
+    void FixedUpdate() {
+        Movement(); 
     }
 
     #region Get Input
@@ -65,28 +73,74 @@ public class PlayerController : MonoBehaviour
 
     #endregion
 
+    #region Grounded
+
+    [Header("Grounded")]
+    [SerializeField] private float _distance = 0.3f;
+    [SerializeField] private Transform _downBack;
+    [SerializeField] private Transform _downFront;
+    [SerializeField] private LayerMask _groundMask;
+
+    private void CheckGrounded() {
+        RaycastHit2D downBack = Physics2D.Raycast(_downBack.position, Vector2.down, _distance, _groundMask);
+        RaycastHit2D downFront = Physics2D.Raycast(_downFront.position, Vector2.down, _distance, _groundMask);
+        Debug.DrawRay(_downBack.position, Vector2.down * _distance, Color.green);
+        Debug.DrawRay(_downFront.position, Vector2.down * _distance, Color.red);
+
+        if (downBack.collider != null || downFront.collider != null) { 
+            grounded = true;
+            //isJumping = false;
+        }
+        else
+            grounded = false;
+    }
+
+    #endregion
 
     #region Jump
+
     [Header("Jump")]
-    [SerializeField] private float jumpForce = 20f;
+    [SerializeField] private float _jumpForce = 100f;
+    [SerializeField] private float _addedGravity = 2f;
+    [SerializeField] private float _gravityDuration = 0.25f;
     private float apexPoint; // Becomes 1 at apex of jump
 
     private void Jump() {
-        grounded = true;
         if (jumpPressed && grounded) {
-            rb.AddForce(new Vector2(0f, jumpForce * rb.gravityScale));
+            isJumping = true;
+            rb.AddForce(new Vector2(0f, _jumpForce * rb.gravityScale));
         }
     }
 
-    private void CalculateJumpApex() {
-            if (grounded) {
-                // Gets stronger the closer to the top of the jump
-                apexPoint = Mathf.InverseLerp(jumpForce, 0, Mathf.Abs(rb.velocity.y));
-            }
-            else {
-                apexPoint = 0;
-            }
+    private void EndJumpEarly() { 
+        if (isJumping && !jumpPressed && !endJumpEarly && rb.velocity.y > 0) {
+            endJumpEarly = true;
+            StartCoroutine(AddGravity());
+        } 
+        else if (rb.velocity.y < 0 && endJumpEarly) {
+            StopCoroutine(AddGravity());
+            rb.gravityScale = baseGravityScale;
+            endJumpEarly = false;
         }
+    }
+
+    IEnumerator AddGravity() {
+        rb.gravityScale += _addedGravity;
+        yield return new WaitForSeconds(_gravityDuration);
+
+        rb.gravityScale = baseGravityScale;
+        endJumpEarly = false;
+    }
+
+    private void CalculateJumpApex() {
+        if (!grounded) {
+            // Gets stronger the closer to the top of the jump
+            apexPoint = Mathf.InverseLerp(_jumpForce, 0, Mathf.Abs(rb.velocity.y));
+        }
+        else {
+            apexPoint = 0;
+        }
+    }
 
     #endregion
 
@@ -110,7 +164,7 @@ public class PlayerController : MonoBehaviour
             var apexMoveBonus = Mathf.Sign(moveVector.x) * apexBonus * apexPoint;
             currentHorizontalSpeed += apexMoveBonus * Time.deltaTime;
             
-            Debug.Log("Velocity.y: " + rb.velocity.y + "And apexMoveBonus: " + apexMoveBonus);
+            //Debug.Log("Velocity.y: " + rb.velocity.y + "And apexMoveBonus: " + apexMoveBonus);
         }
         else {
             // No input, slow character down
