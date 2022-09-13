@@ -49,7 +49,6 @@ public class PlayerController : MonoBehaviour
         movementInput.Enable();
 
         inputControls.Player.Jump.performed += OnJump;
-        inputControls.Player.Jump.canceled += OnJump;
         inputControls.Player.Jump.canceled += EndJumpEarly;
         inputControls.Player.Jump.Enable();
     }
@@ -62,12 +61,12 @@ public class PlayerController : MonoBehaviour
     private void OnJump(InputAction.CallbackContext obj) {
         jumpPressed = obj.action.triggered;
         if (jumpPressed) jumpButtonPressedTime = Time.time;
-        if (jumpPressed && jumpState == JumpState.Jumping || jumpState == JumpState.Falling && lastGroundedTime == null) earlyJumpPressed = true;
-        //Jump();
+        if (jumpPressed && jumpState == JumpState.Jumping || jumpState == JumpState.Falling && lastGroundedTime == null) earlyJumpPressed = obj.action.triggered;
     }
 
     private void EndJumpEarly(InputAction.CallbackContext obj) {
-        EndJumpEarly();
+        jumpPressed = obj.action.triggered;
+        EndJumpEarly(0f);
     }
 
     #endregion
@@ -75,10 +74,10 @@ public class PlayerController : MonoBehaviour
     void Update() {
         GetInput();
         CalculateMovement();
+        Jump();
         CheckGrounded();
         ResetGravity();
         Animate();
-        Jump();
 
         _title.text = (Time.time - lastGroundedTime).ToString();
     }
@@ -112,9 +111,8 @@ public class PlayerController : MonoBehaviour
         Debug.DrawRay(_downBack.position, Vector2.down * _distance, Color.green);
         Debug.DrawRay(_downFront.position, Vector2.down * _distance, Color.red);
 
-        if (downBack.collider != null || downFront.collider != null && !grounded) { 
+        if (downBack.collider != null || downFront.collider != null) { 
             grounded = true;
-            //lastGroundedTime = null;
             lastGroundedTime = Time.time;
         }
         else { 
@@ -132,11 +130,42 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _gravityDuration = 0.25f;
     [SerializeField] private float _jumpButtonGracePeriod = 0.2f;
     [SerializeField] private float _coyoteTimeGracePeriod = 0.2f;
+    [SerializeField] private float _endJumpEarlyDelay = 0.05f;
     private float apexPoint; // Becomes 1 at apex of jump
     private float? jumpButtonPressedTime;
 
     private void Jump() {
-        // Case for jump buffer
+        if (Time.time - lastGroundedTime <= _coyoteTimeGracePeriod
+            && Time.time - jumpButtonPressedTime <= _jumpButtonGracePeriod) {
+
+            Debug.Log("Jumping");
+            //  Reset buffer timers
+            lastGroundedTime = null;
+            jumpButtonPressedTime = null;
+
+            // Cause short hop if buffering jump without holding it
+            if (!jumpPressed && earlyJumpPressed) {
+                endJumpEarly = true;
+                StartCoroutine(AddGravity(_endJumpEarlyDelay));
+            }
+
+            // Reset y velocity
+            rb.velocity = new Vector2(rb.velocity.x, 0f);
+
+            // Case for jump buffer
+            if (earlyJumpPressed && grounded) {
+                earlyJumpPressed = false;
+                rb.AddForce(new Vector2(0f, _jumpForce * rb.gravityScale));
+                return;
+            }
+            // Case for coyote time buffer and regular jump
+            else if (!earlyJumpPressed && jumpPressed && rb.velocity.y <= 0) {
+                rb.AddForce(new Vector2(0f, _jumpForce * rb.gravityScale));
+                return;
+            }
+        }
+
+/*        // Case for jump buffer
         if (earlyJumpPressed) {
             if (rb.velocity.y == 0
                     && Time.time - lastGroundedTime <= _coyoteTimeGracePeriod
@@ -159,26 +188,28 @@ public class PlayerController : MonoBehaviour
                 jumpButtonPressedTime = null;
                 rb.AddForce(new Vector2(0f, _jumpForce * rb.gravityScale));
             }
-        }
+        }*/
     }
 
-    private void EndJumpEarly() { 
+    private void EndJumpEarly(float delay) { 
         if (jumpState == JumpState.Jumping && !jumpPressed && !endJumpEarly && rb.velocity.y > 0) {
             endJumpEarly = true;
-            StartCoroutine(AddGravity());
+            StartCoroutine(AddGravity(delay));
         }
     }
 
-    IEnumerator AddGravity() {
+    IEnumerator AddGravity(float delay) {
+        yield return new WaitForSeconds(delay);
         rb.gravityScale += _addedGravity;
         yield return new WaitForSeconds(_gravityDuration);
 
         rb.gravityScale = baseGravityScale;
         endJumpEarly = false;
     }
+
     private void ResetGravity() { 
         if (rb.velocity.y < 0 && endJumpEarly) {
-            StopCoroutine(AddGravity());
+            StopCoroutine(AddGravity(0f));
             rb.gravityScale = baseGravityScale;
             endJumpEarly = false;
         }

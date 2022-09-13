@@ -752,8 +752,9 @@ MonoBehaviour:
   _jumpForce: 190
   _addedGravity: 2
   _gravityDuration: 0.25
-  _jumpButtonGracePeriod: 0.2
-  _coyoteTimeGracePeriod: 2
+  _jumpButtonGracePeriod: 0.3
+  _coyoteTimeGracePeriod: 0.15
+  _endJumpEarlyDelay: 0.05
   acceleration: 45
   moveClamp: 3
   deAcceleration: 20
