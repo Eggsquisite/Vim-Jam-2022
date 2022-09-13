@@ -62,7 +62,7 @@ public class PlayerController : MonoBehaviour
     private void OnJump(InputAction.CallbackContext obj) {
         jumpPressed = obj.action.triggered;
         if (jumpPressed) jumpButtonPressedTime = Time.time;
-        if (jumpPressed && jumpState == JumpState.Jumping || jumpState == JumpState.Falling) earlyJumpPressed = true;
+        if (jumpPressed && jumpState == JumpState.Jumping || jumpState == JumpState.Falling && lastGroundedTime == null) earlyJumpPressed = true;
         //Jump();
     }
 
@@ -136,17 +136,25 @@ public class PlayerController : MonoBehaviour
     private float? jumpButtonPressedTime;
 
     private void Jump() {
-        if (rb.velocity.y == 0 
-                && Time.time - lastGroundedTime <= _coyoteTimeGracePeriod
-                && Time.time - jumpButtonPressedTime <= _jumpButtonGracePeriod) {
+        // Case for jump buffer
+        if (earlyJumpPressed) {
+            if (rb.velocity.y == 0
+                    && Time.time - lastGroundedTime <= _coyoteTimeGracePeriod
+                    && Time.time - jumpButtonPressedTime <= _jumpButtonGracePeriod) {
 
-            if (jumpPressed && earlyJumpPressed) {
-                // Trying to avoid double force jump (not working)
                 earlyJumpPressed = false;
-                return;
+                lastGroundedTime = null;
+                jumpButtonPressedTime = null;
+                rb.AddForce(new Vector2(0f, _jumpForce * rb.gravityScale));
             }
-            else { 
-                earlyJumpPressed = false;
+        }
+        // Case for coyote buffer
+        else { 
+            if (jumpPressed
+                    && rb.velocity.y <= 0
+                    && Time.time - lastGroundedTime <= _coyoteTimeGracePeriod
+                    && Time.time - jumpButtonPressedTime <= _jumpButtonGracePeriod) {
+
                 lastGroundedTime = null;
                 jumpButtonPressedTime = null;
                 rb.AddForce(new Vector2(0f, _jumpForce * rb.gravityScale));
@@ -236,12 +244,11 @@ public class PlayerController : MonoBehaviour
         }
 
         if (rb.velocity.y > 0 && !grounded && (jumpState == JumpState.Level || jumpState == JumpState.Landing)) {
+            lastGroundedTime = null;
             jumpState = JumpState.Jumping;
             anim.Jump();
         }
         else if (rb.velocity.y < 0 && !grounded) {
-            // To prevent the jump buffer from constantly jumping if jump is held
-            //jumpPressed = false;
             jumpState = JumpState.Falling;
             anim.Fall();
         }
@@ -249,7 +256,7 @@ public class PlayerController : MonoBehaviour
             jumpState = JumpState.Landing;
             anim.Land();
         }
-        else if (jumpState == JumpState.Level) { 
+        else if (jumpState == JumpState.Level) {
             if (moveVector.x != 0) {
                 anim.Run();
             } 
