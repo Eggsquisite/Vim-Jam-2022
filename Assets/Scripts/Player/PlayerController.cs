@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class PlayerController : MonoBehaviour
         Falling,
         Landing
     }
+
+    public TMPro.TextMeshProUGUI _title;
 
     [Header("Input Variables")]
     private PlayerInputControls inputControls;
@@ -24,11 +27,11 @@ public class PlayerController : MonoBehaviour
     [Header("Movement Variables")]
     private bool grounded;
     private Vector2 moveVector;
-    private float currentHorizontalSpeed, currentVerticalSpeed;
+    private float currentHorizontalSpeed;
 
     [Header("Jump Input")]
     private float baseGravityScale;
-    private bool jumpPressed, endJumpEarly;
+    private bool jumpPressed, earlyJumpPressed, endJumpEarly;
 
     void Awake() {
         rb = GetComponent<Rigidbody2D>();
@@ -58,7 +61,9 @@ public class PlayerController : MonoBehaviour
 
     private void OnJump(InputAction.CallbackContext obj) {
         jumpPressed = obj.action.triggered;
-        Jump();
+        if (jumpPressed) jumpButtonPressedTime = Time.time;
+        if (jumpPressed && jumpState == JumpState.Jumping || jumpState == JumpState.Falling) earlyJumpPressed = true;
+        //Jump();
     }
 
     private void EndJumpEarly(InputAction.CallbackContext obj) {
@@ -73,6 +78,9 @@ public class PlayerController : MonoBehaviour
         CheckGrounded();
         ResetGravity();
         Animate();
+        Jump();
+
+        _title.text = (Time.time - lastGroundedTime).ToString();
     }
 
     void FixedUpdate() {
@@ -91,34 +99,27 @@ public class PlayerController : MonoBehaviour
 
     [Header("Grounded")]
     [SerializeField] private float _distance = 1.1f;
-    [SerializeField] private float _fallDistance = 0.7f;
     [SerializeField] private Transform _downBack;
     [SerializeField] private Transform _downFront;
     [SerializeField] private LayerMask _groundMask;
     private RaycastHit2D downBack, downFront;
+    private float? lastGroundedTime;
 
     private void CheckGrounded() {
+        downBack = Physics2D.Raycast(_downBack.position, Vector2.down, _distance, _groundMask);
+        downFront = Physics2D.Raycast(_downFront.position, Vector2.down, _distance, _groundMask);
 
-        if (jumpState == JumpState.Level || jumpState == JumpState.Landing) { 
-            downBack = Physics2D.Raycast(_downBack.position, Vector2.down, _distance, _groundMask);
-            downFront = Physics2D.Raycast(_downFront.position, Vector2.down, _distance, _groundMask);
+        Debug.DrawRay(_downBack.position, Vector2.down * _distance, Color.green);
+        Debug.DrawRay(_downFront.position, Vector2.down * _distance, Color.red);
 
-            Debug.DrawRay(_downBack.position, Vector2.down * _distance, Color.green);
-            Debug.DrawRay(_downFront.position, Vector2.down * _distance, Color.red);
-        }
-        else {
-            downBack = Physics2D.Raycast(_downBack.position, Vector2.down, _fallDistance, _groundMask);
-            downFront = Physics2D.Raycast(_downFront.position, Vector2.down, _fallDistance, _groundMask);
-
-            Debug.DrawRay(_downBack.position, Vector2.down * _fallDistance, Color.green);
-            Debug.DrawRay(_downFront.position, Vector2.down * _fallDistance, Color.red);
-        }
-
-        if (downBack.collider != null || downFront.collider != null) { 
+        if (downBack.collider != null || downFront.collider != null && !grounded) { 
             grounded = true;
+            //lastGroundedTime = null;
+            lastGroundedTime = Time.time;
         }
-        else
+        else { 
             grounded = false;
+        }
     }
 
     #endregion
@@ -129,11 +130,27 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _jumpForce = 100f;
     [SerializeField] private float _addedGravity = 2f;
     [SerializeField] private float _gravityDuration = 0.25f;
+    [SerializeField] private float _jumpButtonGracePeriod = 0.2f;
+    [SerializeField] private float _coyoteTimeGracePeriod = 0.2f;
     private float apexPoint; // Becomes 1 at apex of jump
+    private float? jumpButtonPressedTime;
 
     private void Jump() {
-        if (jumpPressed && grounded) {
-            rb.AddForce(new Vector2(0f, _jumpForce * rb.gravityScale));
+        if (rb.velocity.y == 0 
+                && Time.time - lastGroundedTime <= _coyoteTimeGracePeriod
+                && Time.time - jumpButtonPressedTime <= _jumpButtonGracePeriod) {
+
+            if (jumpPressed && earlyJumpPressed) {
+                // Trying to avoid double force jump (not working)
+                earlyJumpPressed = false;
+                return;
+            }
+            else { 
+                earlyJumpPressed = false;
+                lastGroundedTime = null;
+                jumpButtonPressedTime = null;
+                rb.AddForce(new Vector2(0f, _jumpForce * rb.gravityScale));
+            }
         }
     }
 
@@ -141,7 +158,7 @@ public class PlayerController : MonoBehaviour
         if (jumpState == JumpState.Jumping && !jumpPressed && !endJumpEarly && rb.velocity.y > 0) {
             endJumpEarly = true;
             StartCoroutine(AddGravity());
-        } 
+        }
     }
 
     IEnumerator AddGravity() {
@@ -223,14 +240,16 @@ public class PlayerController : MonoBehaviour
             anim.Jump();
         }
         else if (rb.velocity.y < 0 && !grounded) {
+            // To prevent the jump buffer from constantly jumping if jump is held
+            //jumpPressed = false;
             jumpState = JumpState.Falling;
             anim.Fall();
         }
-        else if (rb.velocity.y == 0 && grounded && jumpState == JumpState.Falling) {
+        else if (rb.velocity.y == 0 && grounded && jumpState == JumpState.Jumping || jumpState == JumpState.Falling) {
             jumpState = JumpState.Landing;
             anim.Land();
         }
-        else if (grounded && jumpState == JumpState.Level) { 
+        else if (jumpState == JumpState.Level) { 
             if (moveVector.x != 0) {
                 anim.Run();
             } 
