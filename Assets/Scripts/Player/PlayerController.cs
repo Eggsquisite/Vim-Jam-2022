@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
     [Header("Input Variables")]
     private PlayerInputControls inputControls;
     private InputAction movementInput;
+    private InputAction mousePosition;
 
     [Header("Components")]
     private Rigidbody2D rb;
@@ -26,7 +27,6 @@ public class PlayerController : MonoBehaviour
 
     [Header("Movement Variables")]
     private bool grounded;
-    private Vector2 moveVector;
     private float currentHorizontalSpeed;
 
     [Header("Jump Input")]
@@ -48,6 +48,9 @@ public class PlayerController : MonoBehaviour
         movementInput = inputControls.Player.Movement;
         movementInput.Enable();
 
+        mousePosition = inputControls.Player.MousePosition;
+        mousePosition.Enable();
+
         inputControls.Player.Jump.performed += OnJump;
         inputControls.Player.Jump.canceled += EndJumpEarly;
         inputControls.Player.Jump.Enable();
@@ -55,6 +58,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnDisable() {
         movementInput.Disable();
+        mousePosition.Disable();
         inputControls.Player.Jump.Disable();
     }
 
@@ -73,6 +77,7 @@ public class PlayerController : MonoBehaviour
 
     void Update() {
         GetInput();
+        GetMousePosition();
         CalculateMovement();
         Jump();
         CheckGrounded();
@@ -86,10 +91,18 @@ public class PlayerController : MonoBehaviour
         Movement(); 
     }
 
-    #region Get Input
+    #region Input Values
+    private Vector2 _moveVector;
+    private Vector3 _mousePos, _worldPos;
 
     private void GetInput() {
-        moveVector = movementInput.ReadValue<Vector2>().normalized;
+        _moveVector = movementInput.ReadValue<Vector2>().normalized;
+    }
+
+    private void GetMousePosition() {
+        _mousePos = mousePosition.ReadValue<Vector2>();
+        _mousePos.z = Camera.main.nearClipPlane;
+        _worldPos = Camera.main.ScreenToWorldPoint(_mousePos);
     }
 
     #endregion
@@ -234,15 +247,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float apexBonus = 2;
 
     private void CalculateMovement() { 
-        if (moveVector.x != 0) { 
+        if (_moveVector.x != 0) { 
             // Set horizontal move speed
-            currentHorizontalSpeed += moveVector.x * acceleration * Time.deltaTime;
+            currentHorizontalSpeed += _moveVector.x * acceleration * Time.deltaTime;
 
             // Clamp max movement
             currentHorizontalSpeed = Mathf.Clamp(currentHorizontalSpeed, -moveClamp, moveClamp);
 
             // Apply bonus at the apex of a jump
-            var apexMoveBonus = Mathf.Sign(moveVector.x) * apexBonus * apexPoint;
+            var apexMoveBonus = Mathf.Sign(_moveVector.x) * apexBonus * apexPoint;
             currentHorizontalSpeed += apexMoveBonus * Time.deltaTime;
             
             //Debug.Log("Velocity.y: " + rb.velocity.y + "And apexMoveBonus: " + apexMoveBonus);
@@ -265,10 +278,10 @@ public class PlayerController : MonoBehaviour
     private JumpState jumpState;
 
     private void Animate() {
-        if (moveVector.x < 0) {
+        if (_moveVector.x < 0) {
             transform.localScale = new Vector2(-1f, transform.localScale.y);
         }
-        else if (moveVector.x > 0) {
+        else if (_moveVector.x > 0) {
             transform.localScale = new Vector2(1f, transform.localScale.y);
         }
 
@@ -286,7 +299,7 @@ public class PlayerController : MonoBehaviour
             anim.Land();
         }
         else if (jumpState == JumpState.Level) {
-            if (moveVector.x != 0) {
+            if (_moveVector.x != 0) {
                 anim.Run();
             } 
             else {

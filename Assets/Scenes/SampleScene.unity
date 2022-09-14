@@ -1184,7 +1184,7 @@ MonoBehaviour:
   _addedGravity: 2
   _gravityDuration: 0.25
   _jumpButtonGracePeriod: 0.15
-  _coyoteTimeGracePeriod: 0.15
+  _coyoteTimeGracePeriod: 0.1
   _endJumpEarlyDelay: 0.05
   acceleration: 45
   moveClamp: 3
