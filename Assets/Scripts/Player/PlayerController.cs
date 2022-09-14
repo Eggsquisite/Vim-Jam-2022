@@ -61,7 +61,7 @@ public class PlayerController : MonoBehaviour
     private void OnJump(InputAction.CallbackContext obj) {
         jumpPressed = obj.action.triggered;
         if (jumpPressed) jumpButtonPressedTime = Time.time;
-        if (jumpPressed && jumpState == JumpState.Jumping || jumpState == JumpState.Falling && lastGroundedTime == null) earlyJumpPressed = obj.action.triggered;
+        if (jumpPressed && jumpState == JumpState.Falling && lastGroundedTime == null) earlyJumpPressed = obj.action.triggered;
     }
 
     private void EndJumpEarly(InputAction.CallbackContext obj) {
@@ -135,10 +135,10 @@ public class PlayerController : MonoBehaviour
     private float? jumpButtonPressedTime;
 
     private void Jump() {
-        if (Time.time - lastGroundedTime <= _coyoteTimeGracePeriod
+        if (jumpState != JumpState.Jumping
+            && Time.time - lastGroundedTime <= _coyoteTimeGracePeriod
             && Time.time - jumpButtonPressedTime <= _jumpButtonGracePeriod) {
 
-            Debug.Log("Jumping");
             //  Reset buffer timers
             lastGroundedTime = null;
             jumpButtonPressedTime = null;
@@ -153,15 +153,13 @@ public class PlayerController : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, 0f);
 
             // Case for jump buffer
-            if (earlyJumpPressed && grounded) {
+            if (earlyJumpPressed && grounded && rb.velocity.y == 0) {
                 earlyJumpPressed = false;
                 rb.AddForce(new Vector2(0f, _jumpForce * rb.gravityScale));
-                return;
             }
             // Case for coyote time buffer and regular jump
             else if (!earlyJumpPressed && jumpPressed && rb.velocity.y <= 0) {
                 rb.AddForce(new Vector2(0f, _jumpForce * rb.gravityScale));
-                return;
             }
         }
 
