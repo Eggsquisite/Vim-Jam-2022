@@ -273,8 +273,8 @@ public class PlayerController : MonoBehaviour
         }
 
         if (rb.velocity.y > 0 && !grounded && (jumpState == JumpState.Level || jumpState == JumpState.Landing)) {
-            lastGroundedTime = null;
             jumpState = JumpState.Jumping;
+            lastGroundedTime = null;
             anim.Jump();
         }
         else if (rb.velocity.y < 0 && !grounded) {

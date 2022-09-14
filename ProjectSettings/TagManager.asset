@@ -12,8 +12,8 @@ TagManager:
   - Water
   - UI
   - Ground
-  - 
-  - 
+  - Interactable
+  - Fire Head
   - 
   - 
   - 
@@ -40,4 +40,19 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Environment
+    uniqueID: 2792840743
+    locked: 0
+  - name: Platform
+    uniqueID: 244171417
+    locked: 0
+  - name: Interactable
+    uniqueID: 2288111559
+    locked: 0
+  - name: Enemy
+    uniqueID: 3164449877
+    locked: 0
+  - name: Player
+    uniqueID: 2797420429
     locked: 0
