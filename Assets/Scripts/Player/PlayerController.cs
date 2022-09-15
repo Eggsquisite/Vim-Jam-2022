@@ -16,6 +16,9 @@ public class PlayerController : MonoBehaviour
 
     public TMPro.TextMeshProUGUI _title;
 
+    [Header("Spawner")]
+    [SerializeField] private Spawner spawner;
+
     [Header("Input Variables")]
     private PlayerInputControls inputControls;
     private InputAction movementInput;
@@ -54,12 +57,24 @@ public class PlayerController : MonoBehaviour
         inputControls.Player.Jump.performed += OnJump;
         inputControls.Player.Jump.canceled += EndJumpEarly;
         inputControls.Player.Jump.Enable();
+
+        inputControls.Player.SelectAirPlatform.performed += AirPreview;
+        inputControls.Player.SelectAirPlatform.Enable();
+
+        inputControls.Player.SelectGroundPlatform.performed += GroundPreview;
+        inputControls.Player.SelectGroundPlatform.Enable();
+
+        inputControls.Player.Spawn.performed += SpawnPlatform;
+        inputControls.Player.Spawn.Enable();
     }
 
     private void OnDisable() {
         movementInput.Disable();
         mousePosition.Disable();
         inputControls.Player.Jump.Disable();
+        inputControls.Player.SelectAirPlatform.Disable();
+        inputControls.Player.SelectGroundPlatform.Disable();
+        inputControls.Player.Spawn.Disable();
     }
 
     private void OnJump(InputAction.CallbackContext obj) {
@@ -71,6 +86,18 @@ public class PlayerController : MonoBehaviour
     private void EndJumpEarly(InputAction.CallbackContext obj) {
         jumpPressed = obj.action.triggered;
         EndJumpEarly(0f);
+    }
+
+    private void AirPreview(InputAction.CallbackContext obj) {
+        spawner.SetAirPreview();
+    }
+
+    private void GroundPreview(InputAction.CallbackContext obj) {
+        spawner.SetGroundPreview();
+    }
+
+    private void SpawnPlatform(InputAction.CallbackContext obj) {
+        spawner.SpawnPlatform();
     }
 
     #endregion
