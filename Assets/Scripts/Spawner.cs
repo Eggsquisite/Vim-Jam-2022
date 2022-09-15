@@ -21,7 +21,7 @@ public class Spawner : MonoBehaviour
     private Platform platformScript;
     private SelectedPlatform platform;
     private bool airPreviewSelected, groundPreviewSelected;
-    private bool readyToSpawnAir = true, readyToSpawnGround = true;
+    private bool readyToSpawnAir, readyToSpawnGround;
 
     // Start is called before the first frame update
     void Start()
@@ -100,12 +100,12 @@ public class Spawner : MonoBehaviour
         }
     }
     
-    // Animation Events
-    private void ReadyToSpawnAir() {
-        readyToSpawnAir = true;
+    // Public Setters
+    public void ReadyToSpawnAir(bool flag) {
+        readyToSpawnAir = flag;
     }
 
-    private void ReadyToSpawnGround() {
-        readyToSpawnGround = true;
+    public void ReadyToSpawnGround(bool flag) {
+        readyToSpawnGround = flag;
     }
 }

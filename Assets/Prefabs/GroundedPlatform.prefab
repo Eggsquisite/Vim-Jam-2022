@@ -202,7 +202,7 @@ GameObject:
   - component: {fileID: 1226243818}
   m_Layer: 11
   m_Name: GroundedPlatform
-  m_TagString: Untagged
+  m_TagString: GroundPlatform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -154,6 +154,22 @@ public class PlayerController : MonoBehaviour
         if (downBack.collider != null || downFront.collider != null) { 
             grounded = true;
             lastGroundedTime = Time.time;
+
+            // Check to see if player is standing on a created platform, if so stop them from creating that same type of platform
+            if (downBack.collider.tag == "AirPlatform" || downFront.collider.tag == "AirPlatform") {
+                spawner.ReadyToSpawnAir(false);
+            }
+            else {
+                spawner.ReadyToSpawnAir(true);
+            }
+
+            if (downBack.collider.tag == "GroundPlatform" || downFront.collider.tag == "GroundPlatform") {
+                spawner.ReadyToSpawnGround(false);
+            }
+            else {
+                spawner.ReadyToSpawnGround(true);
+            }
+
         }
         else { 
             grounded = false;
