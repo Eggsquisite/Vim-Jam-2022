@@ -156,23 +156,70 @@ public class PlayerController : MonoBehaviour
             lastGroundedTime = Time.time;
 
             // Check to see if player is standing on a created platform, if so stop them from creating that same type of platform
-            if (downBack.collider.tag == "AirPlatform" || downFront.collider.tag == "AirPlatform") {
-                spawner.ReadyToSpawnAir(false);
-            }
-            else {
-                spawner.ReadyToSpawnAir(true);
-            }
-
-            if (downBack.collider.tag == "GroundPlatform" || downFront.collider.tag == "GroundPlatform") {
-                spawner.ReadyToSpawnGround(false);
-            }
-            else {
-                spawner.ReadyToSpawnGround(true);
-            }
-
+            CheckReadyToSpawn();
         }
         else { 
             grounded = false;
+
+            // Disallow player from spawning platforms in the air
+            spawner.ReadyToSpawnAir(false);
+            spawner.ReadyToSpawnGround(false);
+        }
+    }
+
+    private void CheckReadyToSpawn() {
+        if (downBack.collider != null && downFront.collider == null) {
+            if (downBack.collider.tag == "AirPlatform") {
+                spawner.ReadyToSpawnAir(false);
+                spawner.ReadyToSpawnGround(true);
+            }
+            else if (downBack.collider.tag == "GroundPlatform") {
+                spawner.ReadyToSpawnGround(false);
+                spawner.ReadyToSpawnAir(true);
+            }
+            else {
+                unableToJump = false;
+                spawner.ReadyToSpawnAir(true);
+                spawner.ReadyToSpawnGround(true);
+            }
+        }
+        else if (downBack.collider == null && downFront.collider != null) {
+            if (downFront.collider.tag == "AirPlatform") {
+                spawner.ReadyToSpawnAir(false);
+                spawner.ReadyToSpawnGround(true);
+            }
+            else if (downFront.collider.tag == "GroundPlatform") {
+                spawner.ReadyToSpawnGround(false);
+                spawner.ReadyToSpawnAir(true);
+            }
+            else {
+                unableToJump = false;
+                spawner.ReadyToSpawnAir(true);
+                spawner.ReadyToSpawnGround(true);
+            }
+        }
+        else if (downBack.collider != null && downFront.collider != null) {
+            if (downBack.collider.tag == "AirPlatform" || downFront.collider.tag == "AirPlatform") {
+                spawner.ReadyToSpawnAir(false);
+                spawner.ReadyToSpawnGround(true);
+
+                if (downBack.collider.tag == "GroundPlatform" || downFront.collider.tag == "GroundPlatform") {
+                    spawner.ReadyToSpawnGround(false);
+                }
+            } 
+            else if (downBack.collider.tag == "GroundPlatform" || downFront.collider.tag == "GroundPlatform") {
+                spawner.ReadyToSpawnGround(false);
+                spawner.ReadyToSpawnAir(true);
+
+                if (downBack.collider.tag == "AirPlatform" || downFront.collider.tag == "AirPlatform") {
+                    spawner.ReadyToSpawnAir(false);
+                }
+            }
+            else {
+                unableToJump = false;
+                spawner.ReadyToSpawnAir(true);
+                spawner.ReadyToSpawnGround(true);
+            }
         }
     }
 
@@ -188,9 +235,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _coyoteTimeGracePeriod = 0.2f;
     [SerializeField] private float _endJumpEarlyDelay = 0.05f;
     private float apexPoint; // Becomes 1 at apex of jump
+    private bool unableToJump; // used when groundedPlatform is launching
     private float? jumpButtonPressedTime;
 
     private void Jump() {
+        if (unableToJump)
+            return;
+
         if (jumpState != JumpState.Jumping
             && Time.time - lastGroundedTime <= _coyoteTimeGracePeriod
             && Time.time - jumpButtonPressedTime <= _jumpButtonGracePeriod) {
@@ -277,6 +328,10 @@ public class PlayerController : MonoBehaviour
         else {
             apexPoint = 0;
         }
+    }
+
+    public void SetUnableToJump(bool flag) {
+        unableToJump = flag;
     }
 
     #endregion
