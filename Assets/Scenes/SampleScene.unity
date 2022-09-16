@@ -130,14 +130,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 6002706035044367794, guid: 6e8934ab5fdd12e4bb9f650444ff7511, type: 3}
-      propertyPath: m_Offset.x
-      value: 0.03
-      objectReference: {fileID: 0}
-    - target: {fileID: 6002706035044367794, guid: 6e8934ab5fdd12e4bb9f650444ff7511, type: 3}
-      propertyPath: m_Offset.y
-      value: -0.02
-      objectReference: {fileID: 0}
     - target: {fileID: 6002706035044367800, guid: 6e8934ab5fdd12e4bb9f650444ff7511, type: 3}
       propertyPath: m_Name
       value: AirPlatform
@@ -531,7 +523,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 149029416}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.45, y: 6.42, z: 0}
+  m_LocalPosition: {x: -0.37, y: 4.46, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2063,10 +2055,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1387569793, guid: 07c0fd67fdd4f9f4ca027e84cd980694, type: 3}
-      propertyPath: raycastOffset
-      value: 2.25
-      objectReference: {fileID: 0}
     - target: {fileID: 3944112878765697600, guid: 07c0fd67fdd4f9f4ca027e84cd980694, type: 3}
       propertyPath: m_Name
       value: Spawner Parent
@@ -2114,6 +2102,14 @@ PrefabInstance:
     - target: {fileID: 3944112878765697607, guid: 07c0fd67fdd4f9f4ca027e84cd980694, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3944112879445061622, guid: 07c0fd67fdd4f9f4ca027e84cd980694, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2.69
+      objectReference: {fileID: 0}
+    - target: {fileID: 3944112879445061622, guid: 07c0fd67fdd4f9f4ca027e84cd980694, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.04
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 07c0fd67fdd4f9f4ca027e84cd980694, type: 3}

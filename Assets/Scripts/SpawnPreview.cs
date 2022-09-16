@@ -12,14 +12,14 @@ public class SpawnPreview : MonoBehaviour
     [SerializeField] private PlatformType type;
     private bool spriteActive;
 
-    [Header("Raycasts (Used for Ground Platform)")]
+    [Header("Raycasts (For Ground Platform)")]
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private Transform frontRay;
     [SerializeField] private Transform backRay;
     [SerializeField] private float length;
     [SerializeField] private Vector2 offset;
 
-    [Header("Movement")]
+    [Header("Movement (For Air Platform)")]
     [SerializeField] private float maxFollowSpeed;
     [SerializeField] private float smoothTime;
     private float baseFollowSpeed;
@@ -56,9 +56,6 @@ public class SpawnPreview : MonoBehaviour
             transform.position = Vector2.MoveTowards(transform.position, airPos, maxFollowSpeed * Time.deltaTime);
         }
         else if (type == PlatformType.Ground) {
-            // Stop raycasts if sprite is not active
-            if (sp.enabled == false)
-                return;
 
             transform.position = Vector2.SmoothDamp(transform.position, _worldPos, ref _currentVelocity, smoothTime, maxFollowSpeed);
             RaycastHit2D frontHit = Physics2D.Raycast(frontRay.position, Vector2.down, length, groundLayer);
@@ -105,8 +102,9 @@ public class SpawnPreview : MonoBehaviour
             frontLower = backLower = false;
             groundPos = new Vector2(_worldPos.x, backTransform.position.y + offset.y);
         }
-        
-        sp.transform.position = Vector2.MoveTowards(sp.transform.position, groundPos, maxFollowSpeed * Time.deltaTime);
+
+        //sp.transform.position = Vector2.MoveTowards(sp.transform.position, groundPos, maxFollowSpeed * Time.deltaTime);
+        sp.transform.position = new Vector2(groundPos.x, groundPos.y);
     }
 
     #endregion

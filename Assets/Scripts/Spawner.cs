@@ -21,7 +21,7 @@ public class Spawner : MonoBehaviour
     [SerializeField] private GameObject airPrefab;
     [SerializeField] private GameObject groundPrefab;
 
-    private Platform platformScript;
+    private Platform airPlatform, groundPlatform;
     private SelectedPlatform platform;
     private bool airPreviewSelected, groundPreviewSelected;
     private bool readyToSpawnAir, readyToSpawnGround;
@@ -133,12 +133,12 @@ public class Spawner : MonoBehaviour
             StartCoroutine(StartAirCooldown());
 
             // Despawn existing platform
-            if (platformScript != null) {
-                platformScript.DeleteAnimation();
+            if (airPlatform != null) {
+                airPlatform.DeleteAnimation();
             }
 
             // Spawn platform at position
-            platformScript = Instantiate(airPrefab, airPreview.transform.position, Quaternion.identity).GetComponent<Platform>();
+            airPlatform = Instantiate(airPrefab, airPreview.transform.position, Quaternion.identity).GetComponent<Platform>();
         }
         else if (platform == SelectedPlatform.Ground) {
             // If not yet ready to spawn OR preview is not selected, do nothing
@@ -150,12 +150,12 @@ public class Spawner : MonoBehaviour
             StartCoroutine(StartGroundCooldown());
 
             // Despawn existing platform
-            if (platformScript != null) {
-                platformScript.DeleteAnimation();
+            if (groundPlatform != null) {
+                groundPlatform.DeleteAnimation();
             }
 
             // Spawn platform at position
-            platformScript = Instantiate(groundPrefab, groundSprite.transform.position, Quaternion.identity).GetComponent<Platform>();
+            groundPlatform = Instantiate(groundPrefab, groundSprite.transform.position, Quaternion.identity).GetComponent<Platform>();
         }
     }
 

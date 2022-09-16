@@ -66,15 +66,30 @@ public class PlayerController : MonoBehaviour
 
         inputControls.Player.Spawn.performed += SpawnPlatform;
         inputControls.Player.Spawn.Enable();
+
+        inputControls.Player.Despawn.performed += DespawnPlatform;
+        inputControls.Player.Despawn.Enable();
     }
 
     private void OnDisable() {
         movementInput.Disable();
         mousePosition.Disable();
+
+        inputControls.Player.Jump.performed -= OnJump;
+        inputControls.Player.Jump.canceled -= EndJumpEarly;
         inputControls.Player.Jump.Disable();
+
+        inputControls.Player.SelectAirPlatform.performed -= AirPreview;
         inputControls.Player.SelectAirPlatform.Disable();
+
+        inputControls.Player.SelectGroundPlatform.performed -= GroundPreview;
         inputControls.Player.SelectGroundPlatform.Disable();
+
+        inputControls.Player.Spawn.performed -= SpawnPlatform;
         inputControls.Player.Spawn.Disable();
+
+        inputControls.Player.Despawn.performed -= DespawnPlatform;
+        inputControls.Player.Despawn.Disable();
     }
 
     private void OnJump(InputAction.CallbackContext obj) {
@@ -100,11 +115,19 @@ public class PlayerController : MonoBehaviour
         spawner.SpawnPlatform();
     }
 
+    private void DespawnPlatform(InputAction.CallbackContext obj) {
+        Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+        RaycastHit2D hit = Physics2D.GetRayIntersection(ray);
+        if (hit.collider != null && (hit.collider.tag == "AirPlatform" || hit.collider.tag == "GroundPlatform")) {
+            hit.collider.GetComponent<Platform>().DeleteAnimation();
+        }
+
+    }
+
     #endregion
 
     void Update() {
         GetInput();
-        GetMousePosition();
         CalculateMovement();
         Jump();
         CheckGrounded();
@@ -124,12 +147,6 @@ public class PlayerController : MonoBehaviour
 
     private void GetInput() {
         _moveVector = movementInput.ReadValue<Vector2>().normalized;
-    }
-
-    private void GetMousePosition() {
-        _mousePos = mousePosition.ReadValue<Vector2>();
-        _mousePos.z = Camera.main.nearClipPlane;
-        _worldPos = Camera.main.ScreenToWorldPoint(_mousePos);
     }
 
     #endregion
