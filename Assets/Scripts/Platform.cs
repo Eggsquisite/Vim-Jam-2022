@@ -46,7 +46,7 @@ public class Platform : MonoBehaviour
         }
     }
 
-    public void DeletePlatform() {
+    public void DeleteAnimation() {
         sp.sortingOrder -= 1;
         AnimHelper.ChangeAnimationState(anim, ref currentState, "delete_anim");
     }

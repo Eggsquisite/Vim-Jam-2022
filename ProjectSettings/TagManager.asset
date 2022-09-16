@@ -6,6 +6,7 @@ TagManager:
   tags:
   - AirPlatform
   - GroundPlatform
+  - Ground
   layers:
   - Default
   - TransparentFX

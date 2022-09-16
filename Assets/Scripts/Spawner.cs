@@ -12,9 +12,10 @@ public class Spawner : MonoBehaviour
     [Header("Previews")]
     [SerializeField] private GameObject airPreview;
     [SerializeField] private GameObject groundPreview;
+    [SerializeField] private SpriteRenderer groundSprite;
     [SerializeField] private SpriteRenderer airDisabled;
     [SerializeField] private SpriteRenderer groundDisabled;
-    private SpriteRenderer airSprite, groundSprite;
+    private SpriteRenderer airSprite;
 
     [Header("Prefabs")]
     [SerializeField] private GameObject airPrefab;
@@ -37,7 +38,7 @@ public class Spawner : MonoBehaviour
         airSprite.enabled = false;
         airDisabled.enabled = false;
 
-        groundSprite = groundPreview.GetComponent<SpriteRenderer>();
+        //groundSprite = groundPreview.GetComponent<SpriteRenderer>();
         groundSprite.enabled = false;
         groundDisabled.enabled = false;
     }
@@ -133,7 +134,7 @@ public class Spawner : MonoBehaviour
 
             // Despawn existing platform
             if (platformScript != null) {
-                platformScript.DeletePlatform();
+                platformScript.DeleteAnimation();
             }
 
             // Spawn platform at position
@@ -150,11 +151,11 @@ public class Spawner : MonoBehaviour
 
             // Despawn existing platform
             if (platformScript != null) {
-                platformScript.DeletePlatform();
+                platformScript.DeleteAnimation();
             }
 
             // Spawn platform at position
-            platformScript = Instantiate(groundPrefab, groundPreview.transform.position, Quaternion.identity).GetComponent<Platform>();
+            platformScript = Instantiate(groundPrefab, groundSprite.transform.position, Quaternion.identity).GetComponent<Platform>();
         }
     }
 
