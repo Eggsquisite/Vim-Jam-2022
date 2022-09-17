@@ -763,7 +763,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 4.821429
+  orthographic size: 5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1634,7 +1634,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.024214268, y: -0.3208393}
+  m_Offset: {x: 0.030675411, y: -0.3359151}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -1645,7 +1645,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.4404993, y: 1.324321}
+  m_Size: {x: 0.4318838, y: 1.2941694}
   m_EdgeRadius: 0
 --- !u!50 &1727802211
 Rigidbody2D:
@@ -1662,7 +1662,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 1
   m_AngularDrag: 0.05
-  m_GravityScale: 3
+  m_GravityScale: 1.5
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -2209,6 +2209,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1492826442418049169, guid: 7036183e369acdc4bb9562a8b619cfb0, type: 3}
+      propertyPath: m_Size.x
+      value: 3.0000162
+      objectReference: {fileID: 0}
+    - target: {fileID: 1492826442418049169, guid: 7036183e369acdc4bb9562a8b619cfb0, type: 3}
+      propertyPath: m_Size.y
+      value: 0.6856694
+      objectReference: {fileID: 0}
+    - target: {fileID: 1492826442418049169, guid: 7036183e369acdc4bb9562a8b619cfb0, type: 3}
+      propertyPath: m_Offset.x
+      value: -0.001352787
+      objectReference: {fileID: 0}
+    - target: {fileID: 1492826442418049169, guid: 7036183e369acdc4bb9562a8b619cfb0, type: 3}
+      propertyPath: m_Offset.y
+      value: -0.03122425
+      objectReference: {fileID: 0}
     - target: {fileID: 1492826442418049171, guid: 7036183e369acdc4bb9562a8b619cfb0, type: 3}
       propertyPath: m_RootOrder
       value: 16
