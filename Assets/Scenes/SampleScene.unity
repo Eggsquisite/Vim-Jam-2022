@@ -2219,14 +2219,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5566730405829646904, guid: cb3924705ad874e4b951f98d520171ed, type: 3}
-      propertyPath: attackLength
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5566730405829646904, guid: cb3924705ad874e4b951f98d520171ed, type: 3}
-      propertyPath: playerLayer.m_Bits
-      value: 512
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cb3924705ad874e4b951f98d520171ed, type: 3}
 --- !u!1001 &6740032173842104137

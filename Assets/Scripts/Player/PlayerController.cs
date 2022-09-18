@@ -127,12 +127,12 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     void Update() {
+        Animate();
         GetInput();
-        CalculateMovement();
         Jump();
+        CalculateMovement();
         CheckGrounded();
         ResetGravity();
-        Animate();
 
         _title.text = (Time.time - lastGroundedTime).ToString();
     }
@@ -148,6 +148,35 @@ public class PlayerController : MonoBehaviour
     private void GetInput() {
         _moveVector = movementInput.ReadValue<Vector2>().normalized;
     }
+
+    #endregion
+
+    #region Hurt
+    [SerializeField] private float invincibleDuration;
+    [SerializeField] private float knockbackSpeed;
+    private bool isInvincible, isHurt;
+
+    public void Hurt() {
+        if (isInvincible) return;
+
+        Debug.Log("Hit");
+
+        anim.Hurt();
+        isHurt = true;
+        isInvincible = true;
+        rb.AddForce(new Vector2(knockbackSpeed, knockbackSpeed));
+    }
+
+    IEnumerator InvincibleDelays() {
+        yield return new WaitForSeconds(invincibleDuration);
+        isInvincible = false;
+    }
+
+    // Animation Events
+    private void ResetHurt() {
+        isHurt = false;
+    }
+
 
     #endregion
 
@@ -383,6 +412,8 @@ public class PlayerController : MonoBehaviour
 
     private void Movement() {
         //rb.MovePosition(rb.position + new Vector2(currentHorizontalSpeed * playerSpeed, transform.position.y) * Time.deltaTime);
+        if (isHurt) return;
+
         rb.velocity = new Vector2(currentHorizontalSpeed, rb.velocity.y);
     }
 
