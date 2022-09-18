@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Components")]
     private Rigidbody2D rb;
+    private SpriteRenderer sp;
     private PlayerAnimations anim;
 
     [Header("Movement Variables")]
@@ -38,6 +39,7 @@ public class PlayerController : MonoBehaviour
 
     void Awake() {
         rb = GetComponent<Rigidbody2D>();
+        sp = GetComponent<SpriteRenderer>();
         anim = GetComponent<PlayerAnimations>();
         inputControls = new PlayerInputControls();
 
@@ -127,12 +129,13 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     void Update() {
+        Jump();
         Animate();
         GetInput();
-        Jump();
-        CalculateMovement();
+        HurtFlash();
         CheckGrounded();
         ResetGravity();
+        CalculateMovement();
 
         _title.text = (Time.time - lastGroundedTime).ToString();
     }
@@ -153,30 +156,58 @@ public class PlayerController : MonoBehaviour
 
     #region Hurt
     [SerializeField] private float invincibleDuration;
+    [SerializeField] private float hurtDuration;
     [SerializeField] private float knockbackSpeed;
-    private bool isInvincible, isHurt;
+    [SerializeField] private float spriteFlashMaxDuration;
+    private float spriteFlashTimer;
+    private bool isInvincible = false, isHurt = false;
+    private Coroutine invincibleRoutine;
 
-    public void Hurt() {
+    public void Hurt(Vector2 direction) {
         if (isInvincible) return;
 
-        Debug.Log("Hit");
+        if (invincibleRoutine != null) StopCoroutine(invincibleRoutine);
+        invincibleRoutine = StartCoroutine(HurtDelays());
 
-        anim.Hurt();
-        isHurt = true;
-        isInvincible = true;
-        rb.AddForce(new Vector2(knockbackSpeed, knockbackSpeed));
+        if (direction.x < 0) {
+            transform.localScale = new Vector2(1f, transform.localScale.y);
+        }
+        else if (direction.x > 0) {
+            transform.localScale = new Vector2(-1f, transform.localScale.y);
+        }
+
+        rb.velocity = Vector2.zero;
+        if (rb.velocity.y == 0f)
+            rb.AddForce(new Vector2(direction.x, 10f) * knockbackSpeed * Time.deltaTime, ForceMode2D.Impulse);
     }
 
-    IEnumerator InvincibleDelays() {
-        yield return new WaitForSeconds(invincibleDuration);
+    IEnumerator HurtDelays() {
+        isHurt = true;
+        isInvincible = true;
+        anim.Hurt();
+
+        yield return new WaitForSeconds(hurtDuration);
+        isHurt = false;
+        anim.Idle();
+
+        yield return new WaitForSeconds(invincibleDuration - hurtDuration);
         isInvincible = false;
     }
 
-    // Animation Events
-    private void ResetHurt() {
-        isHurt = false;
+    private void HurtFlash() { 
+        if (isInvincible) { 
+            if (spriteFlashTimer < spriteFlashMaxDuration) {
+                spriteFlashTimer += Time.deltaTime;
+            }
+            else if (spriteFlashTimer >= spriteFlashMaxDuration) {
+                spriteFlashTimer = 0f;
+                sp.enabled = !sp.enabled;
+            }
+        }
+        else {
+            sp.enabled = true;
+        }
     }
-
 
     #endregion
 
@@ -424,32 +455,45 @@ public class PlayerController : MonoBehaviour
     private JumpState jumpState;
 
     private void Animate() {
-        if (_moveVector.x < 0) {
-            transform.localScale = new Vector2(-1f, transform.localScale.y);
+        if (isHurt) {
+            return;
         }
-        else if (_moveVector.x > 0) {
-            transform.localScale = new Vector2(1f, transform.localScale.y);
-        }
+        else {
+            if (_moveVector.x < 0)
+            {
+                transform.localScale = new Vector2(-1f, transform.localScale.y);
+            }
+            else if (_moveVector.x > 0)
+            {
+                transform.localScale = new Vector2(1f, transform.localScale.y);
+            }
 
-        if (rb.velocity.y > 0 && !grounded && (jumpState == JumpState.Level || jumpState == JumpState.Landing)) {
-            jumpState = JumpState.Jumping;
-            lastGroundedTime = null;
-            anim.Jump();
-        }
-        else if (rb.velocity.y < 0 && !grounded) {
-            jumpState = JumpState.Falling;
-            anim.Fall();
-        }
-        else if (rb.velocity.y == 0 && grounded && jumpState == JumpState.Jumping || jumpState == JumpState.Falling) {
-            jumpState = JumpState.Landing;
-            anim.Land();
-        }
-        else if (jumpState == JumpState.Level) {
-            if (_moveVector.x != 0) {
-                anim.Run();
-            } 
-            else {
-                anim.Idle();
+            if (rb.velocity.y > 0 && !grounded && (jumpState == JumpState.Level || jumpState == JumpState.Landing))
+            {
+                jumpState = JumpState.Jumping;
+                lastGroundedTime = null;
+                anim.Jump();
+            }
+            else if (rb.velocity.y < 0 && !grounded)
+            {
+                jumpState = JumpState.Falling;
+                anim.Fall();
+            }
+            else if (rb.velocity.y == 0 && grounded && jumpState == JumpState.Jumping || jumpState == JumpState.Falling)
+            {
+                jumpState = JumpState.Landing;
+                anim.Land();
+            }
+            else if (jumpState == JumpState.Level)
+            {
+                if (_moveVector.x != 0)
+                {
+                    anim.Run();
+                }
+                else
+                {
+                    anim.Idle();
+                }
             }
         }
     }

@@ -18,7 +18,11 @@ public class Enemy : MonoBehaviour
 
     [Header("Attack")]
     [SerializeField] private LayerMask playerLayer;
-    [SerializeField] private float attackLength;
+    [SerializeField] private float detectAttackLength;
+    [SerializeField] private Transform forwardAttackPoint;
+    [SerializeField] private Vector2 forwardAttackRange;
+    [SerializeField] private Transform upwardAttackPoint;
+    [SerializeField] private float upwardAttackRange;
 
     public bool canMove = true;
     private bool canAttack = true;
@@ -59,10 +63,10 @@ public class Enemy : MonoBehaviour
     }
 
     private void CheckForAttack() {
-        RaycastHit2D frontHit = Physics2D.Raycast(transform.position, Vector2.right, attackLength, playerLayer);
-        RaycastHit2D backHit = Physics2D.Raycast(transform.position, Vector2.left, attackLength, playerLayer);
-        Debug.DrawRay(transform.position, Vector2.right * attackLength, Color.blue);
-        Debug.DrawRay(transform.position, Vector2.left * attackLength, Color.red);
+        RaycastHit2D frontHit = Physics2D.Raycast(transform.position, Vector2.right, detectAttackLength, playerLayer);
+        RaycastHit2D backHit = Physics2D.Raycast(transform.position, Vector2.left, detectAttackLength, playerLayer);
+        Debug.DrawRay(transform.position, Vector2.right * detectAttackLength, Color.blue);
+        Debug.DrawRay(transform.position, Vector2.left * detectAttackLength, Color.red);
 
         if (frontHit.collider != null) {
             // Face direction and attack
@@ -87,6 +91,28 @@ public class Enemy : MonoBehaviour
     }
 
     // Animation Events
+    private void ForwardAttack() {
+        Collider2D[] hitPlayer = Physics2D.OverlapBoxAll(forwardAttackPoint.position, forwardAttackRange, playerLayer);
+
+        foreach(Collider2D player in hitPlayer) {
+            if (player.tag == "Player") { 
+                var direction = (player.transform.position - transform.position).normalized;
+                player.GetComponent<PlayerController>().Hurt(direction);
+            }
+        }
+    }
+
+    private void UpwardAttack() {
+        Collider2D[] hitPlayer = Physics2D.OverlapCircleAll(upwardAttackPoint.position, upwardAttackRange, playerLayer);
+
+        foreach(Collider2D player in hitPlayer) {
+            if (player.tag == "Player") { 
+                var direction = (player.transform.position - transform.position).normalized;
+                player.GetComponent<PlayerController>().Hurt(direction);
+            }
+        }
+    }
+    
     public void SetIsAttacking(int flag) {
         switch (flag) {
             case 0:
@@ -96,5 +122,12 @@ public class Enemy : MonoBehaviour
                 isAttacking = true;
                 break;
         }
+    }
+
+    // DRAW LINES //////////////////////
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.DrawWireSphere(upwardAttackPoint.position, upwardAttackRange);
+        Gizmos.DrawWireCube(forwardAttackPoint.position, forwardAttackRange);
     }
 }
