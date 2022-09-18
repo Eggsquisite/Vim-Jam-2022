@@ -16,20 +16,18 @@ public class PlayerController : MonoBehaviour
 
     public TMPro.TextMeshProUGUI _title;
 
-    [Header("Spawner")]
-    [SerializeField] private Spawner spawner;
-
     [Header("Input Variables")]
     private PlayerInputControls inputControls;
     private InputAction movementInput;
     private InputAction mousePosition;
 
     [Header("Components")]
+    [SerializeField] private Spawner spawner;
     [SerializeField] private HealthUI healthUI;
     private Rigidbody2D rb;
     private SpriteRenderer sp;
     private PlayerAnimations anim;
-    private ShockwaveListener shock;
+    private ShockwaveListener shake;
 
     [Header("Movement Variables")]
     private bool grounded;
@@ -43,7 +41,7 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         sp = GetComponent<SpriteRenderer>();
         anim = GetComponent<PlayerAnimations>();
-        shock = GetComponent<ShockwaveListener>();
+        shake = GetComponent<ShockwaveListener>();
         inputControls = new PlayerInputControls();
 
         baseGravityScale = rb.gravityScale;
@@ -140,6 +138,7 @@ public class PlayerController : MonoBehaviour
         HurtFlash();
         CheckGrounded();
         ResetGravity();
+        CalculateJumpApex();
         CalculateMovement();
 
         _title.text = (Time.time - lastGroundedTime).ToString();
@@ -162,8 +161,10 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region Hurt
-    [SerializeField] private float invincibleDuration;
+    [Header("Hurt")]
     [SerializeField] private float hurtDuration;
+    [SerializeField] private float invincibleDuration;
+    [SerializeField] private float knockbackMod;
     [SerializeField] private float spriteFlashMaxDuration;
     private float spriteFlashTimer;
     private bool isInvincible, isHurt, isDead;
@@ -172,12 +173,12 @@ public class PlayerController : MonoBehaviour
     public void Hurt(Vector2 direction, float knockBackSpeed) {
         if (isInvincible || isDead) return;
 
-        // Shake camera
-        shock.Shake();
+        // Shake camera event
+        shake.CameraShakeEvent();
 
         rb.velocity = Vector2.zero;
         if (rb.velocity.y == 0f)
-            rb.AddForce(new Vector2(direction.x, 10f) * knockBackSpeed * Time.deltaTime, ForceMode2D.Impulse);
+            rb.AddForce(new Vector2(direction.x * knockbackMod, 1f * knockbackMod) * knockBackSpeed * Time.deltaTime, ForceMode2D.Impulse);
 
         if (direction.x < 0) {
             transform.localScale = new Vector2(1f, transform.localScale.y);
@@ -329,11 +330,11 @@ public class PlayerController : MonoBehaviour
 
     [Header("Jump")]
     [SerializeField] private float _jumpForce = 100f;
-    [SerializeField] private float _addedGravity = 2f;
-    [SerializeField] private float _gravityDuration = 0.25f;
     [SerializeField] private float _jumpButtonGracePeriod = 0.2f;
     [SerializeField] private float _coyoteTimeGracePeriod = 0.2f;
+    [SerializeField] private float _addedGravity = 2f;
     [SerializeField] private float _endJumpEarlyDelay = 0.05f;
+    [SerializeField] private float _gravityDuration = 0.25f;
     private float apexPoint; // Becomes 1 at apex of jump
     private bool unableToJump; // used when groundedPlatform is launching
     private float? jumpButtonPressedTime;
@@ -421,9 +422,10 @@ public class PlayerController : MonoBehaviour
     }
 
     private void CalculateJumpApex() {
-        if (!grounded) {
+        if (jumpState == JumpState.Jumping || jumpState == JumpState.Falling) {
             // Gets stronger the closer to the top of the jump
-            apexPoint = Mathf.InverseLerp(_jumpForce, 0, Mathf.Abs(rb.velocity.y));
+            Debug.Log(currentHorizontalSpeed);
+            apexPoint = Mathf.InverseLerp(40f, 0f, Mathf.Abs(rb.velocity.y));
         }
         else {
             apexPoint = 0;
@@ -440,8 +442,8 @@ public class PlayerController : MonoBehaviour
 
     [Header("Movement")]
     [SerializeField] private float acceleration = 90;
-    [SerializeField] private float moveClamp = 15;
     [SerializeField] private float deAcceleration = 60;
+    [SerializeField] private float moveClamp = 15;
     [SerializeField] private float apexBonus = 2;
 
     private void CalculateMovement() { 

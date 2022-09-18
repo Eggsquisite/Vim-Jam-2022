@@ -123,119 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &10361072
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 10361073}
-  - component: {fileID: 10361075}
-  - component: {fileID: 10361074}
-  m_Layer: 0
-  m_Name: Shake
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &10361073
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 10361072}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 20
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &10361074
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 10361072}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 180ecf9b41d478f468eb3e9083753217, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ImpulseDefinition:
-    m_ImpulseChannel: 1
-    m_ImpulseShape: 1
-    m_CustomImpulseShape:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_ImpulseDuration: 0.2
-    m_ImpulseType: 0
-    m_DissipationRate: 0.25
-    m_RawSignal: {fileID: 0}
-    m_AmplitudeGain: 1
-    m_FrequencyGain: 1
-    m_RepeatMode: 0
-    m_Randomize: 1
-    m_TimeEnvelope:
-      m_AttackShape:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      m_DecayShape:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      m_AttackTime: 0
-      m_SustainTime: 0.2
-      m_DecayTime: 0.7
-      m_ScaleWithImpact: 1
-      m_HoldForever: 0
-    m_ImpactRadius: 100
-    m_DirectionMode: 0
-    m_DissipationMode: 2
-    m_DissipationDistance: 100
-    m_PropagationSpeed: 343
-  m_DefaultVelocity: {x: 0, y: -1, z: 0}
---- !u!114 &10361075
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 10361072}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95adbb5b904cdce4cad9f0246d23086d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  shock:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 10361074}
-        m_TargetAssemblyTypeName: Cinemachine.CinemachineImpulseSource, Cinemachine
-        m_MethodName: GenerateImpulse
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1001 &47729738
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1523,79 +1410,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &801332477 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6740032174668446253, guid: 6de45fd959a223142b2c9da7da10b611, type: 3}
-  m_PrefabInstance: {fileID: 6740032173842104137}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &828310886 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6740032174668446255, guid: 6de45fd959a223142b2c9da7da10b611, type: 3}
   m_PrefabInstance: {fileID: 6740032173842104137}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &828310894
+--- !u!114 &828310894 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 828310894, guid: 6de45fd959a223142b2c9da7da10b611, type: 3}
+  m_PrefabInstance: {fileID: 6740032173842104137}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 801332477}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 180ecf9b41d478f468eb3e9083753217, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ImpulseDefinition:
-    m_ImpulseChannel: 1
-    m_ImpulseShape: 2
-    m_CustomImpulseShape:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_ImpulseDuration: 0.2
-    m_ImpulseType: 0
-    m_DissipationRate: 0.25
-    m_RawSignal: {fileID: 0}
-    m_AmplitudeGain: 1
-    m_FrequencyGain: 1
-    m_RepeatMode: 0
-    m_Randomize: 1
-    m_TimeEnvelope:
-      m_AttackShape:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      m_DecayShape:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      m_AttackTime: 0
-      m_SustainTime: 0.2
-      m_DecayTime: 0.7
-      m_ScaleWithImpact: 1
-      m_HoldForever: 0
-    m_ImpactRadius: 100
-    m_DirectionMode: 0
-    m_DissipationMode: 2
-    m_DissipationDistance: 100
-    m_PropagationSpeed: 343
-  m_DefaultVelocity: {x: 0.5, y: -1, z: 0}
---- !u!114 &828310895
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 801332477}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 245f84e89bc376c49994e71137984282, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1055076397
@@ -2853,6 +2681,10 @@ PrefabInstance:
       propertyPath: knockBackSpeed
       value: 50
       objectReference: {fileID: 0}
+    - target: {fileID: 1429150268432292969, guid: 2664d1c8ea1fd7e4cb7f7236047bb389, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1429150268464089719, guid: 2664d1c8ea1fd7e4cb7f7236047bb389, type: 3}
       propertyPath: m_LocalPosition.y
       value: 2.3
@@ -3134,6 +2966,38 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 828310895, guid: 6de45fd959a223142b2c9da7da10b611, type: 3}
+      propertyPath: cameraShake.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 828310895, guid: 6de45fd959a223142b2c9da7da10b611, type: 3}
+      propertyPath: cameraShake.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 828310895, guid: 6de45fd959a223142b2c9da7da10b611, type: 3}
+      propertyPath: cameraShake.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 828310894}
+    - target: {fileID: 828310895, guid: 6de45fd959a223142b2c9da7da10b611, type: 3}
+      propertyPath: cameraShake.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 828310895, guid: 6de45fd959a223142b2c9da7da10b611, type: 3}
+      propertyPath: cameraShake.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: GenerateImpulseWithForce
+      objectReference: {fileID: 0}
+    - target: {fileID: 828310895, guid: 6de45fd959a223142b2c9da7da10b611, type: 3}
+      propertyPath: cameraShake.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Cinemachine.CinemachineImpulseSource, Cinemachine
+      objectReference: {fileID: 0}
+    - target: {fileID: 828310895, guid: 6de45fd959a223142b2c9da7da10b611, type: 3}
+      propertyPath: cameraShake.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_FloatArgument
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 828310895, guid: 6de45fd959a223142b2c9da7da10b611, type: 3}
+      propertyPath: cameraShake.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 6740032174668446241, guid: 6de45fd959a223142b2c9da7da10b611, type: 3}
       propertyPath: _title
       value: 
@@ -3146,6 +3010,14 @@ PrefabInstance:
       propertyPath: healthUI
       value: 
       objectReference: {fileID: 1473744023}
+    - target: {fileID: 6740032174668446241, guid: 6de45fd959a223142b2c9da7da10b611, type: 3}
+      propertyPath: apexBonus
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 6740032174668446241, guid: 6de45fd959a223142b2c9da7da10b611, type: 3}
+      propertyPath: knockbackMod
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 6740032174668446253, guid: 6de45fd959a223142b2c9da7da10b611, type: 3}
       propertyPath: m_Name
       value: Player

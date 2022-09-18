@@ -2,18 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using UnityEngine.Events;
 
 public class ShockwaveListener : MonoBehaviour
 {
-    private CinemachineImpulseSource source;
+    //private CinemachineImpulseSource source;
+    [SerializeField] private UnityEvent cameraShake;
 
-    // Start is called before the first frame update
-    void Awake()
-    {
-        source = GetComponent<CinemachineImpulseSource>();
-    }
-
-    public void Shake() {
-        source.GenerateImpulse();
+    public void CameraShakeEvent() {
+        cameraShake.Invoke();
+        //source.GenerateImpulseWithForce(shakeForce);
     }
 }
