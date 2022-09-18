@@ -9,47 +9,48 @@ public class MovingPlatform : MonoBehaviour
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed;
+    [SerializeField] private Transform platform;
     [SerializeField] private Transform positionOne;
     [SerializeField] private Transform positionTwo;
     [SerializeField] private float switchDelay;
-    private Vector3 savedPosOne, savedPosTwo;
     private int posFlag;
+    private bool switchFlag = true;
 
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-
-        // To account for positions moving as they are children of this gameobject
-        savedPosOne = positionOne.position;
-        savedPosTwo = positionTwo.position;
     }
 
+    private void Start()
+    {
+        platform.position = new Vector2(positionOne.position.x, positionOne.position.y);
+    }
 
     private void Update()
     {
         switch (posFlag) {
             case 1:
-                if (transform.position != savedPosOne) { 
-                    transform.position = Vector2.MoveTowards(transform.position, savedPosOne, moveSpeed * Time.deltaTime);
+                if (platform.position != positionOne.position) { 
+                    platform.position = Vector2.MoveTowards(platform.position, positionOne.position, moveSpeed * Time.deltaTime);
                 }
-                else if (transform.position == savedPosOne) {
+                else if (platform.position == positionOne.position && switchFlag) {
                     StartCoroutine(SwitchPosition(2));
                 }
                 break;
             case 2:
-                if (transform.position != savedPosTwo) { 
-                    transform.position = Vector2.MoveTowards(transform.position, savedPosTwo, moveSpeed * Time.deltaTime);
+                if (platform.position != positionTwo.position) {
+                    platform.position = Vector2.MoveTowards(platform.position, positionTwo.position, moveSpeed * Time.deltaTime);
                 }
-                else if (transform.position == savedPosTwo) {
+                else if (platform.position == positionTwo.position && switchFlag) {
                     StartCoroutine(SwitchPosition(1));
                 }
                 break;
             default:
-                if (transform.position != savedPosOne) { 
-                    transform.position = Vector2.MoveTowards(transform.position, savedPosOne, moveSpeed * Time.deltaTime);
+                if (platform.position != positionOne.position) {
+                    platform.position = Vector2.MoveTowards(platform.position, positionOne.position, moveSpeed * Time.deltaTime);
                 }
-                else if (transform.position == savedPosOne) {
+                else if (platform.position == positionOne.position && switchFlag) {
                     StartCoroutine(SwitchPosition(2));
                 }
                 break;
@@ -57,18 +58,9 @@ public class MovingPlatform : MonoBehaviour
     }
 
     IEnumerator SwitchPosition(int flag) {
-
+        switchFlag = false;
         yield return new WaitForSeconds(switchDelay);
+        switchFlag = true;
         posFlag = flag;
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        collision.transform.SetParent(this.transform);
-    }
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        collision.transform.SetParent(null);
     }
 }

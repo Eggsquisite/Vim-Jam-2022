@@ -51,6 +51,8 @@ public class Platform : MonoBehaviour
         AnimHelper.ChangeAnimationState(anim, ref currentState, "delete_anim");
     }
 
+    
+
     // Animation Events
     private void Launch() {
         if (type == PlatformType.Air)
