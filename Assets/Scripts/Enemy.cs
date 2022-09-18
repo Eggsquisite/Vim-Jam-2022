@@ -17,6 +17,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private EnemyType type;
 
     [Header("Attack")]
+    [SerializeField] private float knockBackSpeed;
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private float detectAttackLength;
     [SerializeField] private Transform forwardAttackPoint;
@@ -26,7 +27,7 @@ public class Enemy : MonoBehaviour
 
     public bool canMove = true;
     private bool canAttack = true;
-    private bool isAttacking, isDead;
+    private bool isAttacking, isDead, destroyThisObject;
     private string currentState;
 
     // Start is called before the first frame update
@@ -81,13 +82,19 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    // GETTERS / SETTERS ///////////////////////////////////////////////////////////////////////
-    public bool GetCanMove() {
-        return canMove;
-    }
-
-    public void SetCanAttack(bool flag) {
-        canAttack = flag;
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (type == EnemyType.Buzz) { 
+            if (collision.collider.tag == "Fire Head") {
+                isDead = true;
+                canMove = false;
+                AnimHelper.ChangeAnimationState(anim, ref currentState, "death_anim");
+            }
+            else if (collision.collider.tag == "Player" && !isDead) {
+                var direction = (collision.transform.position - transform.position).normalized;
+                collision.transform.GetComponent<PlayerController>().Hurt(direction, knockBackSpeed);
+            }
+        }
     }
 
     // Animation Events
@@ -97,7 +104,7 @@ public class Enemy : MonoBehaviour
         foreach(Collider2D player in hitPlayer) {
             if (player.tag == "Player") { 
                 var direction = (player.transform.position - transform.position).normalized;
-                player.GetComponent<PlayerController>().Hurt(direction);
+                player.GetComponent<PlayerController>().Hurt(direction, knockBackSpeed);
             }
         }
     }
@@ -108,7 +115,7 @@ public class Enemy : MonoBehaviour
         foreach(Collider2D player in hitPlayer) {
             if (player.tag == "Player") { 
                 var direction = (player.transform.position - transform.position).normalized;
-                player.GetComponent<PlayerController>().Hurt(direction);
+                player.GetComponent<PlayerController>().Hurt(direction, knockBackSpeed);
             }
         }
     }
@@ -124,9 +131,28 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    private void Death() {
+        destroyThisObject = true;
+    }
+
+    // GETTERS / SETTERS ///////////////////////////////////////////////////////////////////////
+    public bool GetCanMove() {
+        return canMove;
+    }
+
+    public void SetCanAttack(bool flag) {
+        canAttack = flag;
+    }
+
+    public bool GetDestroyThisObject() {
+        return destroyThisObject;
+    }
+
     // DRAW LINES //////////////////////
     private void OnDrawGizmosSelected()
     {
+        if (upwardAttackPoint == null || forwardAttackPoint == null) return;
+
         Gizmos.DrawWireSphere(upwardAttackPoint.position, upwardAttackRange);
         Gizmos.DrawWireCube(forwardAttackPoint.position, forwardAttackRange);
     }

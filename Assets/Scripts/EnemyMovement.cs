@@ -27,6 +27,12 @@ public class EnemyMovement : MonoBehaviour
         enemy.position = new Vector2(enemy.position.x, positionOne.position.y);
     }
 
+    private void Update()
+    {
+        if (enemyScript.GetDestroyThisObject())
+            Destroy(this.gameObject);
+    }
+
     private void FixedUpdate()
     {
         if (positionOne == null || positionTwo == null)

@@ -41,9 +41,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6740032172893427521}
   - component: {fileID: 6740032172893427520}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: FireHitbox
-  m_TagString: Untagged
+  m_TagString: Fire Head
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -73,10 +73,10 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.040279984, y: 0.05492717}
+  m_Offset: {x: 0.013789415, y: -0.03053689}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -87,7 +87,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.5093181, y: 0.39214075}
+  m_Size: {x: 0.37530947, y: 0.18612719}
   m_EdgeRadius: 0
 --- !u!1 &6740032172943988551
 GameObject:
@@ -267,7 +267,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.03244877, y: -0.44906604}
+  m_Offset: {x: 0.03244877, y: -0.53868467}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -278,7 +278,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.4217863, y: 1.0036421}
+  m_Size: {x: 0.4217863, y: 0.82440484}
   m_EdgeRadius: 0
 --- !u!114 &6740032174668446240
 MonoBehaviour:
@@ -372,9 +372,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _title: {fileID: 0}
   spawner: {fileID: 0}
+  healthUI: {fileID: 0}
   invincibleDuration: 1.5
   hurtDuration: 0.5
-  knockbackSpeed: 500
   spriteFlashMaxDuration: 0.1
   _distance: 1.1
   _downBack: {fileID: 6740032172943988550}

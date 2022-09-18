@@ -7,6 +7,7 @@ TagManager:
   - AirPlatform
   - GroundPlatform
   - Ground
+  - Fire Head
   layers:
   - Default
   - TransparentFX
@@ -62,9 +63,12 @@ TagManager:
   - name: Moving Platform
     uniqueID: 1635036065
     locked: 0
-  - name: Solder
+  - name: Soldier
     uniqueID: 379890669
     locked: 0
   - name: Player
     uniqueID: 2797420429
+    locked: 0
+  - name: UI
+    uniqueID: 1181280545
     locked: 0

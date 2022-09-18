@@ -25,9 +25,11 @@ public class PlayerController : MonoBehaviour
     private InputAction mousePosition;
 
     [Header("Components")]
+    [SerializeField] private HealthUI healthUI;
     private Rigidbody2D rb;
     private SpriteRenderer sp;
     private PlayerAnimations anim;
+    private ShockwaveListener shock;
 
     [Header("Movement Variables")]
     private bool grounded;
@@ -41,6 +43,7 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         sp = GetComponent<SpriteRenderer>();
         anim = GetComponent<PlayerAnimations>();
+        shock = GetComponent<ShockwaveListener>();
         inputControls = new PlayerInputControls();
 
         baseGravityScale = rb.gravityScale;
@@ -129,6 +132,8 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     void Update() {
+        if (isDead) return;
+
         Jump();
         Animate();
         GetInput();
@@ -141,6 +146,8 @@ public class PlayerController : MonoBehaviour
     }
 
     void FixedUpdate() {
+        if (isHurt || isDead) return;
+
         Movement(); 
     }
 
@@ -157,17 +164,20 @@ public class PlayerController : MonoBehaviour
     #region Hurt
     [SerializeField] private float invincibleDuration;
     [SerializeField] private float hurtDuration;
-    [SerializeField] private float knockbackSpeed;
     [SerializeField] private float spriteFlashMaxDuration;
     private float spriteFlashTimer;
-    private bool isInvincible = false, isHurt = false;
+    private bool isInvincible, isHurt, isDead;
     private Coroutine invincibleRoutine;
 
-    public void Hurt(Vector2 direction) {
-        if (isInvincible) return;
+    public void Hurt(Vector2 direction, float knockBackSpeed) {
+        if (isInvincible || isDead) return;
 
-        if (invincibleRoutine != null) StopCoroutine(invincibleRoutine);
-        invincibleRoutine = StartCoroutine(HurtDelays());
+        // Shake camera
+        shock.Shake();
+
+        rb.velocity = Vector2.zero;
+        if (rb.velocity.y == 0f)
+            rb.AddForce(new Vector2(direction.x, 10f) * knockBackSpeed * Time.deltaTime, ForceMode2D.Impulse);
 
         if (direction.x < 0) {
             transform.localScale = new Vector2(1f, transform.localScale.y);
@@ -176,9 +186,15 @@ public class PlayerController : MonoBehaviour
             transform.localScale = new Vector2(-1f, transform.localScale.y);
         }
 
-        rb.velocity = Vector2.zero;
-        if (rb.velocity.y == 0f)
-            rb.AddForce(new Vector2(direction.x, 10f) * knockbackSpeed * Time.deltaTime, ForceMode2D.Impulse);
+        if (healthUI.TakeDamage() <= 0) {
+            Debug.Log("Death");
+            rb.velocity = Vector2.zero;
+            StartCoroutine(Death());
+        }
+        else { 
+            if (invincibleRoutine != null) StopCoroutine(invincibleRoutine);
+            invincibleRoutine = StartCoroutine(HurtDelays());
+        }
     }
 
     IEnumerator HurtDelays() {
@@ -207,6 +223,13 @@ public class PlayerController : MonoBehaviour
         else {
             sp.enabled = true;
         }
+    }
+
+    IEnumerator Death() {
+        isDead = true;
+        anim.Death();
+        rb.velocity = Vector2.zero;
+        yield return new WaitForSeconds(0.5f);
     }
 
     #endregion
@@ -443,8 +466,6 @@ public class PlayerController : MonoBehaviour
 
     private void Movement() {
         //rb.MovePosition(rb.position + new Vector2(currentHorizontalSpeed * playerSpeed, transform.position.y) * Time.deltaTime);
-        if (isHurt) return;
-
         rb.velocity = new Vector2(currentHorizontalSpeed, rb.velocity.y);
     }
 
