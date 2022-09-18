@@ -188,7 +188,6 @@ public class PlayerController : MonoBehaviour
         }
 
         if (healthUI.TakeDamage() <= 0) {
-            Debug.Log("Death");
             rb.velocity = Vector2.zero;
             StartCoroutine(Death());
         }
@@ -370,31 +369,6 @@ public class PlayerController : MonoBehaviour
                 rb.AddForce(new Vector2(0f, _jumpForce * rb.gravityScale));
             }
         }
-
-/*        // Case for jump buffer
-        if (earlyJumpPressed) {
-            if (rb.velocity.y == 0
-                    && Time.time - lastGroundedTime <= _coyoteTimeGracePeriod
-                    && Time.time - jumpButtonPressedTime <= _jumpButtonGracePeriod) {
-
-                earlyJumpPressed = false;
-                lastGroundedTime = null;
-                jumpButtonPressedTime = null;
-                rb.AddForce(new Vector2(0f, _jumpForce * rb.gravityScale));
-            }
-        }
-        // Case for coyote buffer
-        else { 
-            if (jumpPressed
-                    && rb.velocity.y <= 0
-                    && Time.time - lastGroundedTime <= _coyoteTimeGracePeriod
-                    && Time.time - jumpButtonPressedTime <= _jumpButtonGracePeriod) {
-
-                lastGroundedTime = null;
-                jumpButtonPressedTime = null;
-                rb.AddForce(new Vector2(0f, _jumpForce * rb.gravityScale));
-            }
-        }*/
     }
 
     private void EndJumpEarly(float delay) { 
@@ -424,8 +398,7 @@ public class PlayerController : MonoBehaviour
     private void CalculateJumpApex() {
         if (jumpState == JumpState.Jumping || jumpState == JumpState.Falling) {
             // Gets stronger the closer to the top of the jump
-            Debug.Log(currentHorizontalSpeed);
-            apexPoint = Mathf.InverseLerp(40f, 0f, Mathf.Abs(rb.velocity.y));
+            apexPoint = Mathf.InverseLerp(30f, 0f, Mathf.Abs(rb.velocity.y));
         }
         else {
             apexPoint = 0;
@@ -457,8 +430,6 @@ public class PlayerController : MonoBehaviour
             // Apply bonus at the apex of a jump
             var apexMoveBonus = Mathf.Sign(_moveVector.x) * apexBonus * apexPoint;
             currentHorizontalSpeed += apexMoveBonus * Time.deltaTime;
-            
-            //Debug.Log("Velocity.y: " + rb.velocity.y + "And apexMoveBonus: " + apexMoveBonus);
         }
         else {
             // No input, slow character down
@@ -482,39 +453,31 @@ public class PlayerController : MonoBehaviour
             return;
         }
         else {
-            if (_moveVector.x < 0)
-            {
+            if (_moveVector.x < 0) {
                 transform.localScale = new Vector2(-1f, transform.localScale.y);
             }
-            else if (_moveVector.x > 0)
-            {
+            else if (_moveVector.x > 0) {
                 transform.localScale = new Vector2(1f, transform.localScale.y);
             }
 
-            if (rb.velocity.y > 0 && !grounded && (jumpState == JumpState.Level || jumpState == JumpState.Landing))
-            {
+            if (rb.velocity.y > 0 && !grounded && (jumpState == JumpState.Level || jumpState == JumpState.Landing)) {
                 jumpState = JumpState.Jumping;
                 lastGroundedTime = null;
                 anim.Jump();
             }
-            else if (rb.velocity.y < 0 && !grounded)
-            {
+            else if (rb.velocity.y < 0 && !grounded) {
                 jumpState = JumpState.Falling;
                 anim.Fall();
             }
-            else if (rb.velocity.y == 0 && grounded && jumpState == JumpState.Jumping || jumpState == JumpState.Falling)
-            {
+            else if (rb.velocity.y == 0 && grounded && jumpState == JumpState.Jumping || jumpState == JumpState.Falling) {
                 jumpState = JumpState.Landing;
                 anim.Land();
             }
-            else if (jumpState == JumpState.Level)
-            {
-                if (_moveVector.x != 0)
-                {
+            else if (jumpState == JumpState.Level) {
+                if (_moveVector.x != 0) {
                     anim.Run();
                 }
-                else
-                {
+                else {
                     anim.Idle();
                 }
             }
