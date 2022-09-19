@@ -89,6 +89,15 @@ public partial class @PlayerInputControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Interact"",
+                    ""type"": ""Button"",
+                    ""id"": ""31d72206-fa30-4d6b-bd9e-2bec6cae1f76"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -212,6 +221,17 @@ public partial class @PlayerInputControls : IInputActionCollection2, IDisposable
                     ""action"": ""Despawn"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c77dd187-783b-4c2e-aabd-9b89ded079f9"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -227,6 +247,7 @@ public partial class @PlayerInputControls : IInputActionCollection2, IDisposable
         m_Player_SelectAirPlatform = m_Player.FindAction("Select Air Platform", throwIfNotFound: true);
         m_Player_Spawn = m_Player.FindAction("Spawn", throwIfNotFound: true);
         m_Player_Despawn = m_Player.FindAction("Despawn", throwIfNotFound: true);
+        m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -293,6 +314,7 @@ public partial class @PlayerInputControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_SelectAirPlatform;
     private readonly InputAction m_Player_Spawn;
     private readonly InputAction m_Player_Despawn;
+    private readonly InputAction m_Player_Interact;
     public struct PlayerActions
     {
         private @PlayerInputControls m_Wrapper;
@@ -304,6 +326,7 @@ public partial class @PlayerInputControls : IInputActionCollection2, IDisposable
         public InputAction @SelectAirPlatform => m_Wrapper.m_Player_SelectAirPlatform;
         public InputAction @Spawn => m_Wrapper.m_Player_Spawn;
         public InputAction @Despawn => m_Wrapper.m_Player_Despawn;
+        public InputAction @Interact => m_Wrapper.m_Player_Interact;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -334,6 +357,9 @@ public partial class @PlayerInputControls : IInputActionCollection2, IDisposable
                 @Despawn.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDespawn;
                 @Despawn.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDespawn;
                 @Despawn.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDespawn;
+                @Interact.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
+                @Interact.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
+                @Interact.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -359,6 +385,9 @@ public partial class @PlayerInputControls : IInputActionCollection2, IDisposable
                 @Despawn.started += instance.OnDespawn;
                 @Despawn.performed += instance.OnDespawn;
                 @Despawn.canceled += instance.OnDespawn;
+                @Interact.started += instance.OnInteract;
+                @Interact.performed += instance.OnInteract;
+                @Interact.canceled += instance.OnInteract;
             }
         }
     }
@@ -372,5 +401,6 @@ public partial class @PlayerInputControls : IInputActionCollection2, IDisposable
         void OnSelectAirPlatform(InputAction.CallbackContext context);
         void OnSpawn(InputAction.CallbackContext context);
         void OnDespawn(InputAction.CallbackContext context);
+        void OnInteract(InputAction.CallbackContext context);
     }
 }

@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
         Landing
     }
 
-    public TMPro.TextMeshProUGUI _title;
+    //public TMPro.TextMeshProUGUI _title;
 
     [Header("Input Variables")]
     private PlayerInputControls inputControls;
@@ -28,6 +28,7 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer sp;
     private PlayerAnimations anim;
     private ShockwaveListener shake;
+    private Dialogue dialogue;
 
     [Header("Movement Variables")]
     private bool grounded;
@@ -72,6 +73,9 @@ public class PlayerController : MonoBehaviour
 
         inputControls.Player.Despawn.performed += DespawnPlatform;
         inputControls.Player.Despawn.Enable();
+
+        inputControls.Player.Interact.performed += Interact;
+        inputControls.Player.Interact.Enable();
     }
 
     private void OnDisable() {
@@ -93,6 +97,9 @@ public class PlayerController : MonoBehaviour
 
         inputControls.Player.Despawn.performed -= DespawnPlatform;
         inputControls.Player.Despawn.Disable();
+
+        inputControls.Player.Interact.performed -= Interact;
+        inputControls.Player.Interact.Disable();
     }
 
     private void OnJump(InputAction.CallbackContext obj) {
@@ -124,7 +131,13 @@ public class PlayerController : MonoBehaviour
         if (hit.collider != null && (hit.collider.tag == "AirPlatform" || hit.collider.tag == "GroundPlatform")) {
             hit.collider.GetComponent<Platform>().DeleteAnimation();
         }
+    }
 
+    private void Interact(InputAction.CallbackContext obj) {
+        if (dialogue != null) {
+            dialogue.gameObject.SetActive(true);
+            dialogue.StartDialogue();
+        }
     }
 
     #endregion
@@ -141,7 +154,7 @@ public class PlayerController : MonoBehaviour
         CalculateJumpApex();
         CalculateMovement();
 
-        _title.text = (Time.time - lastGroundedTime).ToString();
+        //_title.text = (Time.time - lastGroundedTime).ToString();
     }
 
     void FixedUpdate() {
@@ -156,6 +169,10 @@ public class PlayerController : MonoBehaviour
 
     private void GetInput() {
         _moveVector = movementInput.ReadValue<Vector2>().normalized;
+    }
+
+    public void GetDialogue(Dialogue _dialogue) {
+        dialogue = _dialogue;
     }
 
     #endregion

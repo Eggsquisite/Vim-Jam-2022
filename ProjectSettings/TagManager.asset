@@ -8,6 +8,10 @@ TagManager:
   - GroundPlatform
   - Ground
   - Fire Head
+  - RespawnCollider
+  - NPC
+  - Fire
+  - Torch
   layers:
   - Default
   - TransparentFX
