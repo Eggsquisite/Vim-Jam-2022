@@ -12,6 +12,7 @@ TagManager:
   - NPC
   - Fire
   - Torch
+  - OutOfBounds
   layers:
   - Default
   - TransparentFX

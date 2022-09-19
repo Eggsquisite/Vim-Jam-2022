@@ -7,6 +7,7 @@ public class Torch : MonoBehaviour
 {
     [SerializeField] private UnityEvent OnLight;
     private Animator anim;
+    private bool isLit;
 
     private void Awake()
     {

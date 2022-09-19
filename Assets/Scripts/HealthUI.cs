@@ -28,4 +28,10 @@ public class HealthUI : MonoBehaviour
         return currentHealth;
     }
 
+    public void Respawn() {
+        currentHealth = maxHealth;
+        for (int i = 0; i < healthAnims.Count; i++) {
+            healthAnims[i].Play("idle_anim");
+        }
+    }
 }

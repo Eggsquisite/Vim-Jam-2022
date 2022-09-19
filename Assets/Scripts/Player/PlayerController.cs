@@ -21,6 +21,9 @@ public class PlayerController : MonoBehaviour
     private InputAction movementInput;
     private InputAction mousePosition;
 
+    [Header("Respawn")]
+    private Vector2 spawnPos;
+
     [Header("Components")]
     [SerializeField] private Spawner spawner;
     [SerializeField] private HealthUI healthUI;
@@ -45,6 +48,7 @@ public class PlayerController : MonoBehaviour
         shake = GetComponent<ShockwaveListener>();
         inputControls = new PlayerInputControls();
 
+        spawnPos = transform.position;
         baseGravityScale = rb.gravityScale;
         jumpState = JumpState.Level;
     }
@@ -205,8 +209,7 @@ public class PlayerController : MonoBehaviour
         }
 
         if (healthUI.TakeDamage() <= 0) {
-            rb.velocity = Vector2.zero;
-            StartCoroutine(Death());
+            Death();
         }
         else { 
             if (invincibleRoutine != null) StopCoroutine(invincibleRoutine);
@@ -242,11 +245,23 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    IEnumerator Death() {
+    public void Death() {
+        StartCoroutine(DeathRoutine());
+    }
+
+    IEnumerator DeathRoutine() {
         isDead = true;
         anim.Death();
         rb.velocity = Vector2.zero;
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(2f);
+        healthUI.Respawn();
+        Respawn();
+    }
+
+    private void Respawn() {
+        isDead = false;
+        anim.Idle();
+        transform.position = spawnPos;
     }
 
     #endregion
